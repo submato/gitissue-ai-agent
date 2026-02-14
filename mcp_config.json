@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "gitlab-ai-agent": {
+      "command": "python3",
+      "args": [
+        "/home/mhyuser/gitlab-ai-agent/mcp_server.py"
+      ],
+      "env": {}
+    }
+  }
+}

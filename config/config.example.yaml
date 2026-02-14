@@ -1,0 +1,54 @@
+gitlab:
+  # GitLab 实例 URL
+  url: "https://platgit.mihoyo.com"
+
+  # Personal Access Token
+  # 获取：GitLab > Preferences > Access Tokens
+  # 权限：api, read_repository, write_repository
+  access_token: "YOUR_GITLAB_TOKEN"
+
+  # 要处理的用户（你的用户名）
+  assignee_username: "zhiyang.wang"
+
+  # 自动处理的标签
+  # 只有带这些标签的 issues 才会被处理
+  auto_process_labels:
+    - "bot"
+    - "auto-fix"
+    - "ai"
+
+# AI Provider 配置
+ai_provider:
+  # Provider 类型: claude, openai, ollama, local
+  type: "claude"
+
+  # Claude 配置
+  claude:
+    # Anthropic API Key (获取：https://console.anthropic.com/settings/keys)
+    api_key: "YOUR_CLAUDE_API_KEY"
+
+    # 或使用本地代理（如果有）
+    # api_base: "http://localhost:8082"
+    # api_key: "any-value"  # 本地代理可以用任意值
+
+    # 模型
+    model: "claude-sonnet-4-5-20250929"
+
+  # OpenAI 配置（可选）
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY"
+    model: "gpt-4"
+
+# 工作空间配置
+workspace:
+  # 克隆代码的本地路径
+  clone_path: "/tmp/gitlab-ai-agent-workspace"
+
+# 状态文件路径
+state_file: "state.json"
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "gitlab-agent.log"  # 留空则只输出到控制台
