@@ -73,10 +73,13 @@ def main():
     )
 
     # 初始化 AI Provider
+    # 如果有 USE_LOCAL_PROXY 环境变量，使用本地代理；否则使用官方 API
+    api_base = "http://localhost:8082" if os.getenv('USE_LOCAL_PROXY') else None
+
     ai_provider = ClaudeProvider(
         api_key=anthropic_api_key,
         model="claude-sonnet-4-5-20250929",
-        api_base="http://localhost:8082"  # 使用本地代理
+        api_base=api_base
     )
 
     try:

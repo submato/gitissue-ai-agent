@@ -136,6 +136,8 @@ See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
 ✅ **This repository has GitHub Actions enabled!** Issues with `bot` label are automatically processed.
 
+⚠️ **Note**: GitHub Actions runs in the cloud and requires a real Anthropic API key (cannot use local proxy).
+
 To enable GitHub Actions in your own repository:
 1. Fork or clone this repository
 2. Add `ANTHROPIC_API_KEY` secret in repository settings:
@@ -144,6 +146,10 @@ To enable GitHub Actions in your own repository:
    - Name: `ANTHROPIC_API_KEY`
    - Value: Your Claude API key from https://console.anthropic.com/settings/keys
 3. The workflow is already configured in `.github/workflows/issue-agent.yml`
+
+**Alternatively**, if you only want to use a local proxy:
+- Delete the workflow file (GitHub Actions won't work with local proxies)
+- Run the agent manually with: `USE_LOCAL_PROXY=1 python process_github_issue.py`
 
 See [GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_SETUP.md) for detailed instructions.
 
@@ -546,6 +552,8 @@ python main.py --stats
 
 ✅ **本仓库已启用 GitHub Actions！** 带 `bot` 标签的 issue 会自动处理。
 
+⚠️ **注意**：GitHub Actions 在云端运行，需要真实的 Anthropic API key（无法使用本地代理）。
+
 要在你自己的仓库启用 GitHub Actions：
 1. Fork 或克隆本仓库
 2. 在仓库设置中添加 `ANTHROPIC_API_KEY` 密钥：
@@ -554,6 +562,10 @@ python main.py --stats
    - 名称：`ANTHROPIC_API_KEY`
    - 值：从 https://console.anthropic.com/settings/keys 获取的 Claude API key
 3. 工作流配置文件已在 `.github/workflows/issue-agent.yml`
+
+**或者**，如果你只想使用本地代理：
+- 删除工作流文件（GitHub Actions 无法访问本地代理）
+- 手动运行：`USE_LOCAL_PROXY=1 python process_github_issue.py`
 
 详见 [GitHub Actions 设置指南](docs/GITHUB_ACTIONS_SETUP.md)。
 
