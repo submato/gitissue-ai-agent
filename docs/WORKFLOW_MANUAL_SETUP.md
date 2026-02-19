@@ -18,6 +18,8 @@ name: Issue AI Agent
 on:
   issues:
     types: [opened, labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   process-issue:
