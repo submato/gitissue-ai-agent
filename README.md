@@ -13,12 +13,13 @@
 
 ### 🌟 Features
 
-- 🤖 **Automatic Issue Resolution** - AI analyzes and solves GitLab issues automatically
+- 🤖 **Automatic Issue Resolution** - AI analyzes and solves GitLab/GitHub issues automatically
 - 💬 **Intelligent Comments** - Ask for clarification by @mentioning issue authors when needed
-- 🔧 **Auto MR Creation** - Automatically creates merge requests with fixes
-- 📊 **Multi-Project Support** - Handle issues across all your GitLab projects
+- 🔧 **Auto MR/PR Creation** - Automatically creates merge/pull requests with fixes
+- 📊 **Multi-Platform Support** - Handle issues from GitLab and GitHub
+- 📁 **Multi-Project Support** - Handle issues across all your projects
 - 🔌 **Pluggable AI Providers** - Support Claude, GPT-4, local LLMs, and more
-- 🏷️ **Label-Driven Workflow** - Control automation with issue labels
+- 🏷️ **Label-Driven Workflow** - Control automation with issue labels (auto-managed)
 - 📈 **State Management** - Never process the same issue twice
 - ⚡ **Dual Mode** - API mode for servers, MCP mode for Claude Code integration
 
@@ -42,6 +43,8 @@ cp config/config.example.yaml config/config.yaml
 
 Edit `config/config.yaml`:
 
+**For GitLab:**
+
 ```yaml
 gitlab:
   url: "https://gitlab.com"
@@ -58,9 +61,32 @@ workspace:
   clone_path: "/tmp/gitissue-ai-agent-workspace"
 ```
 
-**Get GitLab Token:**
+**For GitHub:**
+
+```yaml
+github:
+  access_token: "YOUR_GITHUB_TOKEN"
+  username: "your-username"
+  auto_process_labels: ["bot", "auto-fix", "ai"]
+
+ai_provider:
+  type: "claude"
+  api_key: "YOUR_API_KEY"
+  model: "claude-sonnet-4-5-20250929"
+
+workspace:
+  clone_path: "/tmp/gitissue-ai-agent-workspace"
+```
+
+**Get Tokens:**
+
+GitLab:
 1. Visit GitLab > Preferences > Access Tokens
 2. Create new token with permissions: `api`, `read_repository`, `write_repository`
+
+GitHub:
+1. Visit GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic)
+2. Create new token with scopes: `repo`, `workflow`
 
 #### Run
 
@@ -94,25 +120,154 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
-### 📋 How It Works
+### 🐙 Using for GitHub Issues (This Repository)
+
+Want to see the agent in action? Try it on this repository!
+
+1. **Create an issue** in this repository: https://github.com/submato/gitissue-ai-agent/issues/new
+2. **Add labels**: Add `bot` label to trigger automation
+3. **Describe your request**:
+   - Bug fixes: "Fix typo in README"
+   - Features: "Add Docker support"
+   - Documentation: "Improve installation guide"
+4. **Watch the agent work**: The agent will:
+   - Analyze your issue
+   - Comment if more info needed
+   - Create PR with fix
+   - Update labels automatically
+
+**Example Issues You Can Create:**
+
+- `[bot]` Fix typo in documentation
+- `[bot] [urgent]` Add example configuration file
+- `[bot]` Improve error handling in main.py
+
+The agent is configured to help maintain this repository!
+
+### 📋 Complete Workflow
 
 ```
-┌─────────────────┐
-│  GitLab Issues  │  (with labels: bot, auto-fix, ai)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   AI Analysis   │  Claude/GPT-4 analyzes the issue
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-need_info  can_handle
-    │         │
-    ▼         ▼
- Comment   Fix & MR
- @author   Create
+┌──────────────────────────────────────────────────────────────┐
+│                    Issue Created (Manual)                     │
+│              User creates issue on GitLab/GitHub              │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      Agent Detection                          │
+│   • Checks for trigger labels (bot, auto-fix, ai)           │
+│   • Filters assigned issues                                  │
+│   • Skips already processed issues                           │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      AI Analysis Phase                        │
+│   Claude/GPT-4 analyzes:                                     │
+│   • Issue description and context                            │
+│   • Code repository structure                                │
+│   • Feasibility assessment                                   │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+    ┌─────────────────┐   ┌─────────────────┐
+    │   Need More     │   │   Can Handle    │
+    │   Information   │   │                 │
+    └────────┬────────┘   └────────┬────────┘
+             │                     │
+             ▼                     ▼
+    ┌─────────────────┐   ┌─────────────────┐
+    │ Post Comment    │   │   Clone Repo    │
+    │ @mention author │   │   Create Branch │
+    │ Ask questions   │   │                 │
+    │ Add label:      │   └────────┬────────┘
+    │ "needs-info"    │            │
+    └────────┬────────┘            ▼
+             │           ┌─────────────────┐
+             │           │  Implement Fix  │
+             │           │  Run Tests      │
+             │           │  Verify Changes │
+             │           └────────┬────────┘
+             │                    │
+             │                    ▼
+             │           ┌─────────────────┐
+             │           │   Commit Code   │
+             │           │   Push Branch   │
+             │           └────────┬────────┘
+             │                    │
+             │                    ▼
+             │           ┌─────────────────┐
+             │           │  Create MR/PR   │
+             │           │  Link to Issue  │
+             │           │  Add label:     │
+             │           │  "ready-review" │
+             │           └────────┬────────┘
+             │                    │
+             └────────────────────┼─────────────────────┐
+                                  ▼                     │
+                         ┌─────────────────┐            │
+                         │ Post Comment    │            │
+                         │ on Issue        │            │
+                         │ • MR/PR link    │            │
+                         │ • Summary       │            │
+                         └────────┬────────┘            │
+                                  │                     │
+                                  ▼                     ▼
+                         ┌─────────────────┐   ┌────────────────┐
+                         │ Update State    │   │ Wait for Reply │
+                         │ Mark Complete   │   │ Re-analyze     │
+                         └─────────────────┘   └────────────────┘
+```
+
+### 🎬 Example Workflow Scenarios
+
+#### Scenario 1: Auto-fixable Bug
+
+```
+1. User creates issue: "Fix login button CSS on mobile"
+   Labels: [bot, bug]
+
+2. Agent detects and analyzes
+   → Decision: can_handle
+
+3. Agent actions:
+   ✓ Clone repository
+   ✓ Create branch: bot/issue-123-fix-login-button
+   ✓ Fix CSS in styles/login.css
+   ✓ Run tests
+   ✓ Commit: "Fix #123: Fix login button CSS on mobile"
+   ✓ Push and create MR
+   ✓ Add label: ready-review
+   ✓ Comment on issue with MR link
+
+4. Result: Issue linked to MR, ready for human review
+```
+
+#### Scenario 2: Need More Information
+
+```
+1. User creates issue: "Add export feature"
+   Labels: [bot, feature]
+
+2. Agent detects and analyzes
+   → Decision: need_info
+
+3. Agent actions:
+   ✓ Post comment:
+     "@author I need more information:
+      1. What data to export?
+      2. Export format (CSV/JSON/Excel)?
+      3. Any filters needed?"
+   ✓ Add label: needs-info
+
+4. User replies with details
+
+5. Agent re-analyzes
+   → Decision: can_handle
+   → Proceeds with implementation
+
+6. Result: Feature implemented with proper requirements
 ```
 
 ### 🎯 Two Execution Modes
@@ -128,14 +283,59 @@ need_info  can_handle
 
 **Recommendation**: Use MCP mode for local development, API mode for production deployment.
 
-### 🏷️ Label System
+### 🏷️ Label System & Management
 
-Control automation with GitLab labels:
+#### Trigger Labels (Start Processing)
+
+These labels tell the agent to process an issue:
 
 - `bot` - General automation tasks
 - `auto-fix` - Auto-fixable bugs
 - `ai` - AI-assisted features
 - `urgent` - High priority (process first)
+
+#### Status Labels (Auto-managed by Agent)
+
+The agent automatically adds/updates these labels during processing:
+
+- `analyzing` - Agent is analyzing the issue
+- `needs-info` - Waiting for more information from author
+- `in-progress` - Agent is working on the fix
+- `ready-review` - MR/PR created, ready for human review
+- `completed` - Issue resolved and merged
+- `cannot-fix` - Issue too complex for automated handling
+- `blocked` - Blocked by external dependencies
+
+#### Priority Labels
+
+- `urgent` - Process immediately (highest priority)
+- `high` - Process soon
+- `normal` - Standard priority (default)
+- `low` - Process when idle
+
+#### Agent Capabilities
+
+The agent can intelligently:
+
+✅ **Add labels** based on analysis results
+✅ **Update labels** as status changes
+✅ **Read labels** to determine priority
+✅ **Remove labels** when no longer applicable
+✅ **Preserve user labels** (doesn't remove manual labels)
+
+#### Label-based Filtering
+
+Configure which labels trigger automation in `config.yaml`:
+
+```yaml
+gitlab:
+  auto_process_labels: ["bot", "auto-fix", "ai"]
+  priority_labels:
+    urgent: 10
+    high: 5
+    normal: 1
+    low: 0
+```
 
 ### 📊 Project Structure
 
@@ -219,12 +419,13 @@ MIT License - see [LICENSE](LICENSE)
 
 ### 🌟 特性
 
-- 🤖 **自动解决 Issue** - AI 自动分析并解决 GitLab issues
+- 🤖 **自动解决 Issue** - AI 自动分析并解决 GitLab/GitHub issues
 - 💬 **智能评论** - 需要时通过 @mention 向 issue 作者询问
-- 🔧 **自动创建 MR** - 自动创建包含修复的合并请求
-- 📊 **多项目支持** - 处理所有 GitLab 项目中的 issues
+- 🔧 **自动创建 MR/PR** - 自动创建包含修复的合并/拉取请求
+- 📊 **多平台支持** - 处理 GitLab 和 GitHub 的 issues
+- 📁 **多项目支持** - 处理所有项目中的 issues
 - 🔌 **可插拔 AI** - 支持 Claude、GPT-4、本地 LLM 等
-- 🏷️ **标签驱动** - 通过 issue 标签控制自动化
+- 🏷️ **标签驱动** - 通过 issue 标签控制自动化（自动管理）
 - 📈 **状态管理** - 永不重复处理同一个 issue
 - ⚡ **双模式** - API 模式用于服务器，MCP 模式集成 Claude Code
 
@@ -300,26 +501,144 @@ python main.py --stats
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
 
-### 📋 工作原理
+### 🐙 在 GitHub Issues 上使用（本仓库）
+
+想看看 agent 的实际效果？在本仓库上试试吧！
+
+1. **创建 issue**：https://github.com/submato/gitissue-ai-agent/issues/new
+2. **添加标签**：添加 `bot` 标签触发自动化
+3. **描述你的需求**：
+   - Bug 修复："修复 README 中的错别字"
+   - 新功能："添加 Docker 支持"
+   - 文档改进："改进安装指南"
+4. **观察 agent 工作**：agent 会：
+   - 分析你的 issue
+   - 需要时评论询问
+   - 创建 PR 修复
+   - 自动更新标签
+
+**示例 Issues：**
+
+- `[bot]` 修复文档中的错别字
+- `[bot] [urgent]` 添加示例配置文件
+- `[bot]` 改进 main.py 的错误处理
+
+Agent 已配置好帮助维护本仓库！
+
+### 📋 完整工作流程
 
 ```
-┌─────────────────┐
-│  GitLab Issues  │  (带标签: bot, auto-fix, ai)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   AI 分析       │  Claude/GPT-4 分析 issue
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-need_info  can_handle
-    │         │
-    ▼         ▼
- 评论询问  修复并创建 MR
- @作者
+┌──────────────────────────────────────────────────────────────┐
+│                    创建 Issue（人工）                         │
+│              用户在 GitLab/GitHub 创建 issue                  │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      Agent 检测                               │
+│   • 检查触发标签 (bot, auto-fix, ai)                        │
+│   • 过滤已分配的 issues                                      │
+│   • 跳过已处理的 issues                                      │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      AI 分析阶段                              │
+│   Claude/GPT-4 分析：                                        │
+│   • Issue 描述和上下文                                       │
+│   • 代码仓库结构                                             │
+│   • 可行性评估                                               │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+    ┌─────────────────┐   ┌─────────────────┐
+    │   需要更多      │   │   可以处理      │
+    │   信息          │   │                 │
+    └────────┬────────┘   └────────┬────────┘
+             │                     │
+             ▼                     ▼
+    ┌─────────────────┐   ┌─────────────────┐
+    │ 发布评论        │   │   克隆仓库      │
+    │ @mention 作者   │   │   创建分支      │
+    │ 询问问题        │   │                 │
+    │ 添加标签：      │   └────────┬────────┘
+    │ "needs-info"    │            │
+    └────────┬────────┘            ▼
+             │           ┌─────────────────┐
+             │           │  实现修复       │
+             │           │  运行测试       │
+             │           │  验证更改       │
+             │           └────────┬────────┘
+             │                    │
+             │                    ▼
+             │           ┌─────────────────┐
+             │           │   提交代码      │
+             │           │   推送分支      │
+             │           └────────┬────────┘
+             │                    │
+             │                    ▼
+             │           ┌─────────────────┐
+             │           │  创建 MR/PR     │
+             │           │  链接到 Issue   │
+             │           │  添加标签：     │
+             │           │  "ready-review" │
+             │           └────────┬────────┘
+             │                    │
+             └────────────────────┼─────────────────────┐
+                                  ▼                     │
+                         ┌─────────────────┐            │
+                         │ 在 Issue 评论   │            │
+                         │ • MR/PR 链接    │            │
+                         │ • 摘要说明      │            │
+                         └────────┬────────┘            │
+                                  │                     │
+                                  ▼                     ▼
+                         ┌─────────────────┐   ┌────────────────┐
+                         │ 更新状态        │   │ 等待回复       │
+                         │ 标记完成        │   │ 重新分析       │
+                         └─────────────────┘   └────────────────┘
 ```
+
+### 🏷️ 标签系统与管理
+
+#### 触发标签（启动处理）
+
+这些标签告诉 agent 处理 issue：
+
+- `bot` - 通用自动化任务
+- `auto-fix` - 可自动修复的 bug
+- `ai` - AI 辅助功能
+- `urgent` - 高优先级（优先处理）
+
+#### 状态标签（Agent 自动管理）
+
+Agent 在处理过程中自动添加/更新这些标签：
+
+- `analyzing` - Agent 正在分析 issue
+- `needs-info` - 等待作者提供更多信息
+- `in-progress` - Agent 正在处理修复
+- `ready-review` - MR/PR 已创建，等待人工审核
+- `completed` - Issue 已解决并合并
+- `cannot-fix` - Issue 过于复杂，无法自动处理
+- `blocked` - 被外部依赖阻塞
+
+#### 优先级标签
+
+- `urgent` - 立即处理（最高优先级）
+- `high` - 尽快处理
+- `normal` - 标准优先级（默认）
+- `low` - 空闲时处理
+
+#### Agent 能力
+
+Agent 可以智能地：
+
+✅ **添加标签** - 基于分析结果
+✅ **更新标签** - 随状态变化
+✅ **读取标签** - 确定优先级
+✅ **删除标签** - 当不再适用时
+✅ **保留用户标签** - 不删除手动标签
 
 ### 🎯 两种执行模式
 
@@ -333,15 +652,6 @@ need_info  can_handle
 | 自动创建 MR | 手动 | ✅ 自动 |
 
 **建议**: 本地开发用 MCP 模式，生产部署用 API 模式。
-
-### 🏷️ 标签系统
-
-用 GitLab 标签控制自动化：
-
-- `bot` - 通用自动化任务
-- `auto-fix` - 可自动修复的 bug
-- `ai` - AI 辅助功能
-- `urgent` - 高优先级（优先处理）
 
 ### 🔧 管理工具
 
