@@ -166,25 +166,25 @@ See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
 This project runs on your own server with local AI proxy support for automatic issue processing.
 
-**Super Simple Setup (No Flask, No Webhook Needed):**
+**Quick Setup:**
 
-**Option 1: Single GitHub Repository**
+**Single GitHub Repository:**
 ```bash
 # 1. Install
 git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. Run once to test (monitors current repo by default)
+# 2. Run once to test
 ./run_auto_process.sh
 
 # 3. Add to crontab for automatic processing (every 3 minutes)
 crontab -e
 # Add this line:
-*/3 * * * * export GITHUB_TOKEN='your_token' && /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+*/3 * * * * export GITHUB_TOKEN='your_token' && /path/to/run_auto_process.sh >> /path/to/logs/cron.log 2>&1
 ```
 
-**Option 2: Multiple GitHub Repositories (Recommended)**
+**Multiple GitHub Repositories:**
 ```bash
 # Monitor multiple repos in one command
 export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
@@ -193,10 +193,10 @@ export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
 # Add to crontab
 crontab -e
 # Add this line:
-*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /home/mhyuser/gitissue-ai-agent/run_github_multi_repos.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /path/to/run_github_multi_repos.sh >> /path/to/logs/cron.log 2>&1
 ```
 
-**Option 3: GitLab (All Your Assigned Issues)**
+**GitLab (All Your Assigned Issues):**
 ```bash
 # 1. Create config file
 cp config/config.example.yaml config/config.yaml
@@ -208,30 +208,18 @@ nano config/config.yaml  # Fill in your GitLab token and username
 # 3. Add to crontab
 crontab -e
 # Add:
-*/5 * * * * export USE_LOCAL_PROXY=1 && /home/mhyuser/gitissue-ai-agent/run_gitlab_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/gitlab_cron.log 2>&1
+*/5 * * * * export USE_LOCAL_PROXY=1 && /path/to/run_gitlab_auto_process.sh >> /path/to/logs/gitlab_cron.log 2>&1
 ```
 
-**That's it!** The script will automatically check for new issues every 3 minutes and process them.
+The script automatically checks for new issues every few minutes and processes them.
 
-**Two deployment options:**
-
-- **📅 Cron Job (Recommended)** - Simple and reliable
-  - No dependencies (no Flask, no web server)
-  - Automatic periodic checks every N minutes
-  - See [Server Setup Guide](docs/SERVER_SETUP.md)
-
-- **🚀 Webhook Server** - Real-time response
-  - Requires Flask and webhook configuration
-  - Instant processing when issues are created
-  - See [Server Setup Guide](docs/SERVER_SETUP.md)
-
-See [📖 Complete Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
+See [📖 Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
 
 <a name="try-it-on-this-repo"></a>
 
 ### 🐙 Try It on This Repository!
 
-**✨ This repository has the agent running!** Experience AI issue processing:
+This repository has the agent enabled! Create an issue to see it in action:
 
 1. **Create an issue**: https://github.com/submato/gitissue-ai-agent/issues/new
 2. **Add `bot` label** to trigger automation
@@ -656,25 +644,25 @@ python main.py --stats
 
 本项目运行在你自己的服务器上，支持本地 AI 代理，自动处理 issues。
 
-**超级简单设置（无需 Flask，无需 Webhook）：**
+**快速设置：**
 
-**方式 1：单个 GitHub 仓库**
+**单个 GitHub 仓库：**
 ```bash
 # 1. 安装
 git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. 运行一次测试（默认监听当前仓库）
+# 2. 运行一次测试
 ./run_auto_process.sh
 
 # 3. 添加到 crontab 实现自动处理（每 3 分钟）
 crontab -e
 # 添加：
-*/3 * * * * export GITHUB_TOKEN='your_token' && /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+*/3 * * * * export GITHUB_TOKEN='your_token' && /path/to/run_auto_process.sh >> /path/to/logs/cron.log 2>&1
 ```
 
-**方式 2：多个 GitHub 仓库（推荐）**
+**多个 GitHub 仓库：**
 ```bash
 # 一条命令监听多个仓库
 export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
@@ -683,10 +671,10 @@ export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
 # 添加到 crontab
 crontab -e
 # 添加：
-*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /home/mhyuser/gitissue-ai-agent/run_github_multi_repos.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /path/to/run_github_multi_repos.sh >> /path/to/logs/cron.log 2>&1
 ```
 
-**方式 3：GitLab（所有分配给你的 Issues）**
+**GitLab（所有分配给你的 Issues）：**
 ```bash
 # 1. 创建配置文件
 cp config/config.example.yaml config/config.yaml
@@ -698,22 +686,10 @@ nano config/config.yaml  # 填写你的 GitLab token 和用户名
 # 3. 添加到 crontab
 crontab -e
 # 添加：
-*/5 * * * * export USE_LOCAL_PROXY=1 && /home/mhyuser/gitissue-ai-agent/run_gitlab_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/gitlab_cron.log 2>&1
+*/5 * * * * export USE_LOCAL_PROXY=1 && /path/to/run_gitlab_auto_process.sh >> /path/to/logs/gitlab_cron.log 2>&1
 ```
 
-**就这么简单！** 脚本会每 3 分钟自动检查并处理新 issues。
-
-**两种部署方式：**
-
-- **📅 定时任务（Cron）（推荐）** - 简单可靠
-  - 零依赖（无需 Flask，无需 web 服务器）
-  - 每 N 分钟自动检查
-  - 详见[服务器设置指南](docs/SERVER_SETUP.md)
-
-- **🚀 Webhook 服务器** - 实时响应
-  - 需要 Flask 和 webhook 配置
-  - Issue 创建后立即处理
-  - 详见[服务器设置指南](docs/SERVER_SETUP.md)
+脚本会每隔几分钟自动检查并处理新 issues。
 
 详见 [📖 完整服务器设置指南](docs/SERVER_SETUP.md)。
 
@@ -721,14 +697,11 @@ crontab -e
 
 ### 🐙 在本仓库体验！
 
-**✨ 本仓库已启用 AI Agent！** 体验 AI issue 处理：
+本仓库已启用 agent！创建 issue 看效果：
 
 1. **创建 issue**：https://github.com/submato/gitissue-ai-agent/issues/new
 2. **添加 `bot` 标签** 触发自动化
-
-### 🐙 在本仓库体验！
-
-想看看 agent 的实际效果？在本仓库上试试吧！
+3. **描述你的需求**：
 
 1. **创建 issue**：https://github.com/submato/gitissue-ai-agent/issues/new
 2. **添加标签**：添加 `bot` 标签触发自动化
