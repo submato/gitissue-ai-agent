@@ -132,26 +132,35 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
-**GitHub Actions (Automatic on GitHub)**
+**Server Mode (24/7 Automatic Processing)**
 
-✅ **This repository has GitHub Actions enabled!** Issues with `bot` label are automatically processed.
+This project is designed to run on your own server with local AI proxy support.
 
-⚠️ **Note**: GitHub Actions runs in the cloud and requires a real Anthropic API key (cannot use local proxy).
+To set up automatic issue processing on your server:
 
-To enable GitHub Actions in your own repository:
-1. Fork or clone this repository
-2. Add `ANTHROPIC_API_KEY` secret in repository settings:
-   - Go to: `Settings` > `Secrets and variables` > `Actions`
-   - Click `New repository secret`
-   - Name: `ANTHROPIC_API_KEY`
-   - Value: Your Claude API key from https://console.anthropic.com/settings/keys
-3. The workflow is already configured in `.github/workflows/issue-agent.yml`
+1. **Install and configure** on your server:
+   ```bash
+   git clone https://github.com/submato/gitissue-ai-agent.git
+   cd gitissue-ai-agent
+   pip install -r requirements.txt
+   ```
 
-**Alternatively**, if you only want to use a local proxy:
-- Delete the workflow file (GitHub Actions won't work with local proxies)
-- Run the agent manually with: `USE_LOCAL_PROXY=1 python process_github_issue.py`
+2. **Set up environment variables**:
+   ```bash
+   export USE_LOCAL_PROXY=1  # Use local AI proxy
+   export GITHUB_TOKEN="your_github_token"
+   export ANTHROPIC_API_KEY="any_value"  # Not used when using local proxy
+   ```
 
-See [GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_SETUP.md) for detailed instructions.
+3. **Run with systemd or cron** for 24/7 operation:
+   ```bash
+   # Option 1: Cron job (every 5 minutes)
+   */5 * * * * cd /path/to/gitissue-ai-agent && USE_LOCAL_PROXY=1 python process_github_issue.py
+
+   # Option 2: Systemd service (see docs/SERVER_SETUP.md)
+   ```
+
+See [Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
 
 <a name="try-it-on-this-repo"></a>
 
@@ -548,26 +557,35 @@ python main.py --stats
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
 
-**GitHub Actions（GitHub 上自动运行）**
+**服务器模式（24/7 自动处理）**
 
-✅ **本仓库已启用 GitHub Actions！** 带 `bot` 标签的 issue 会自动处理。
+本项目设计为在你自己的服务器上运行，支持本地 AI 代理。
 
-⚠️ **注意**：GitHub Actions 在云端运行，需要真实的 Anthropic API key（无法使用本地代理）。
+在服务器上设置自动 issue 处理：
 
-要在你自己的仓库启用 GitHub Actions：
-1. Fork 或克隆本仓库
-2. 在仓库设置中添加 `ANTHROPIC_API_KEY` 密钥：
-   - 进入：`Settings` > `Secrets and variables` > `Actions`
-   - 点击 `New repository secret`
-   - 名称：`ANTHROPIC_API_KEY`
-   - 值：从 https://console.anthropic.com/settings/keys 获取的 Claude API key
-3. 工作流配置文件已在 `.github/workflows/issue-agent.yml`
+1. **安装和配置**：
+   ```bash
+   git clone https://github.com/submato/gitissue-ai-agent.git
+   cd gitissue-ai-agent
+   pip install -r requirements.txt
+   ```
 
-**或者**，如果你只想使用本地代理：
-- 删除工作流文件（GitHub Actions 无法访问本地代理）
-- 手动运行：`USE_LOCAL_PROXY=1 python process_github_issue.py`
+2. **设置环境变量**：
+   ```bash
+   export USE_LOCAL_PROXY=1  # 使用本地 AI 代理
+   export GITHUB_TOKEN="你的github_token"
+   export ANTHROPIC_API_KEY="任意值"  # 使用本地代理时不需要真实值
+   ```
 
-详见 [GitHub Actions 设置指南](docs/GITHUB_ACTIONS_SETUP.md)。
+3. **使用 systemd 或 cron 实现 24/7 运行**：
+   ```bash
+   # 方式 1：Cron 定时任务（每 5 分钟）
+   */5 * * * * cd /path/to/gitissue-ai-agent && USE_LOCAL_PROXY=1 python process_github_issue.py
+
+   # 方式 2：Systemd 服务（详见 docs/SERVER_SETUP.md）
+   ```
+
+详见[服务器设置指南](docs/SERVER_SETUP.md)。
 
 <a name="try-it-on-this-repo-zh"></a>
 
