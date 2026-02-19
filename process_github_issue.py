@@ -6,8 +6,47 @@ GitHub Issue 处理脚本
 
 import os
 import sys
+import logging
+from datetime import datetime
 from core.github import GitHubClient
 from providers.claude import ClaudeProvider
+
+
+def setup_logging(issue_number):
+    """设置日志，同时输出到控制台和文件"""
+    # 创建 logs 目录
+    log_dir = "logs"
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    # 日志文件名包含 issue 号和时间戳
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = os.path.join(log_dir, f"github_issue_{issue_number}_{timestamp}.log")
+
+    # 配置日志格式
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+
+    # 创建 logger
+    logger = logging.getLogger('GitHubIssueAgent')
+    logger.setLevel(logging.INFO)
+
+    # 清除已有的 handlers
+    logger.handlers = []
+
+    # 文件 handler
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter(log_format))
+    logger.addHandler(file_handler)
+
+    # 控制台 handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(logging.Formatter(log_format))
+    logger.addHandler(console_handler)
+
+    logger.info(f"Logging to: {log_file}")
+    return logger, log_file
 
 
 def main():
@@ -19,10 +58,12 @@ def main():
     repo_name = os.getenv('REPO_NAME')
 
     if not all([github_token, anthropic_api_key, issue_number, repo_owner, repo_name]):
-        print("Error: Missing required environment variables")
+        logger.info("Error: Missing required environment variables")
         sys.exit(1)
 
-    print(f"Processing issue #{issue_number} in {repo_owner}/{repo_name}")
+    # 设置日志
+    logger, log_file = setup_logging(issue_number)
+    logger.info(f"Processing issue #{issue_number} in {repo_owner}/{repo_name}")
 
     # 初始化客户端
     github_client = GitHubClient(
@@ -42,14 +83,24 @@ def main():
         # 获取 issue 详情
         issue = github_client.get_issue_by_number(issue_number)
 
-        print(f"Issue title: {issue['title']}")
-        print(f"Issue body: {issue['body'][:200]}...")  # 打印前200字符
+        logger.info(f"Issue title: {issue['title']}")
+        logger.info(f"Issue body: {issue['body'][:200]}...")  # 打印前200字符
+
+        # 立即发布开始处理的评论
+        start_comment = f"""🤖 **AI Agent 已开始处理此 issue，请稍等...**
+
+正在分析 issue 内容，很快会给出反馈。
+
+⏳ *Processing...*
+"""
+        github_client.add_comment(issue_number, start_comment)
+        logger.info("Posted 'start processing' comment")
 
         # 添加 analyzing 标签
         current_labels = [label['name'] for label in issue.get('labels', [])]
         if 'analyzing' not in current_labels:
             github_client.add_labels(issue_number, ['analyzing'])
-            print("Added 'analyzing' label")
+            logger.info("Added 'analyzing' label")
 
         # 构建仓库信息（用于 AI 分析）
         repo_info = {
@@ -70,9 +121,9 @@ def main():
             'labels': [label['name'] for label in issue.get('labels', [])]
         }
 
-        print("\nAnalyzing issue with AI...")
+        logger.info("\nAnalyzing issue with AI...")
         analysis_result = ai_provider.analyze_issue(unified_issue, repo_info)
-        print(f"AI Analysis: {analysis_result}")
+        logger.info(f"AI Analysis: {analysis_result}")
 
         # 根据分析结果采取行动
         action = analysis_result.get('action', 'skip')
@@ -101,7 +152,7 @@ Once you provide these details, I'll be able to help with this issue automatical
             new_labels.append('needs-info')
             github_client.update_issue_labels(issue_number, new_labels)
 
-            print("Posted comment asking for more info")
+            logger.info("Posted comment asking for more info")
 
         elif action == "can_handle":
             # 可以处理
@@ -126,8 +177,8 @@ I'll start working on this shortly. Stay tuned for updates!
             new_labels.append('in-progress')
             github_client.update_issue_labels(issue_number, new_labels)
 
-            print("Posted comment confirming can handle")
-            print("Note: Actual implementation would be done here")
+            logger.info("Posted comment confirming can handle")
+            logger.info("Note: Actual implementation would be done here")
 
         else:  # skip or other
             # 无法自动处理
@@ -147,12 +198,13 @@ This issue would benefit from human review and implementation. I'll label it app
             new_labels.append('cannot-fix')
             github_client.update_issue_labels(issue_number, new_labels)
 
-            print("Posted comment explaining cannot handle")
+            logger.info("Posted comment explaining cannot handle")
 
-        print(f"\n✅ Successfully processed issue #{issue_number}")
+        logger.info(f"\n✅ Successfully processed issue #{issue_number}")
+        logger.info(f"📁 Log saved to: {log_file}")
 
     except Exception as e:
-        print(f"Error processing issue: {e}")
+        logger.error(f"Error processing issue: {e}")
 
         # 发布错误评论
         try:
