@@ -29,11 +29,41 @@
 - 💬 **Intelligent Comments** - Ask for clarification by @mentioning issue authors when needed
 - 🔧 **Auto MR/PR Creation** - Automatically creates merge/pull requests with fixes
 - 📊 **Multi-Platform Support** - Handle issues from GitLab and GitHub
-- 📁 **Multi-Project Support** - Handle issues across all your projects
+- 📁 **Multi-Repository Support** - Monitor multiple repositories simultaneously
 - 🔌 **Pluggable AI Providers** - Support Claude, GPT-4, local LLMs, and more
 - 🏷️ **Label-Driven Workflow** - Control automation with issue labels (auto-managed)
 - 📈 **State Management** - Never process the same issue twice
 - ⚡ **Dual Mode** - API mode for servers, MCP mode for Claude Code integration
+
+### 🎯 GitHub vs GitLab: Different Workflows
+
+This agent supports both platforms with workflows optimized for different scenarios:
+
+| Platform | Monitoring Scope | Best For | Configuration |
+|----------|-----------------|----------|---------------|
+| **GitHub** 🐙 | **Repository-level** | Personal projects, open source | Environment variables |
+| **GitLab** 🦊 | **User-level** | Enterprise/team projects | Config file |
+
+**GitHub (Repository-Focused)**
+- ✅ Monitor specific repositories you own or contribute to
+- ✅ Perfect for personal projects and open source
+- ✅ Simple: Just specify `owner/repo`
+- ✅ Can monitor multiple repos: `user1/repo1,user2/repo2`
+
+**GitLab (User-Focused)**
+- ✅ Monitor all issues assigned to you across projects
+- ✅ Perfect for company/team environment
+- ✅ Automatic: Tracks your workload wherever you're assigned
+- ✅ No need to configure each project separately
+
+**Example:**
+```bash
+# GitHub: "Monitor these 3 repos I care about"
+GITHUB_REPOS="myuser/project1,myuser/project2,team/shared-repo"
+
+# GitLab: "Monitor all issues assigned to me (across all projects)"
+assignee_username: "myusername"
+```
 
 ### 🚀 Quick Start
 
@@ -138,19 +168,47 @@ This project runs on your own server with local AI proxy support for automatic i
 
 **Super Simple Setup (No Flask, No Webhook Needed):**
 
+**Option 1: Single GitHub Repository**
 ```bash
 # 1. Install
 git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. Run once to test
+# 2. Run once to test (monitors current repo by default)
 ./run_auto_process.sh
 
 # 3. Add to crontab for automatic processing (every 3 minutes)
 crontab -e
 # Add this line:
-*/3 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+*/3 * * * * export GITHUB_TOKEN='your_token' && /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+```
+
+**Option 2: Multiple GitHub Repositories (Recommended)**
+```bash
+# Monitor multiple repos in one command
+export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
+./run_github_multi_repos.sh
+
+# Add to crontab
+crontab -e
+# Add this line:
+*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /home/mhyuser/gitissue-ai-agent/run_github_multi_repos.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+```
+
+**Option 3: GitLab (All Your Assigned Issues)**
+```bash
+# 1. Create config file
+cp config/config.example.yaml config/config.yaml
+nano config/config.yaml  # Fill in your GitLab token and username
+
+# 2. Test
+./run_gitlab_auto_process.sh
+
+# 3. Add to crontab
+crontab -e
+# Add:
+*/5 * * * * export USE_LOCAL_PROXY=1 && /home/mhyuser/gitissue-ai-agent/run_gitlab_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/gitlab_cron.log 2>&1
 ```
 
 **That's it!** The script will automatically check for new issues every 3 minutes and process them.
@@ -486,11 +544,41 @@ MIT License - see [LICENSE](LICENSE)
 - 💬 **智能评论** - 需要时通过 @mention 向 issue 作者询问
 - 🔧 **自动创建 MR/PR** - 自动创建包含修复的合并/拉取请求
 - 📊 **多平台支持** - 处理 GitLab 和 GitHub 的 issues
-- 📁 **多项目支持** - 处理所有项目中的 issues
+- 📁 **多仓库支持** - 同时监听多个仓库
 - 🔌 **可插拔 AI** - 支持 Claude、GPT-4、本地 LLM 等
 - 🏷️ **标签驱动** - 通过 issue 标签控制自动化（自动管理）
 - 📈 **状态管理** - 永不重复处理同一个 issue
 - ⚡ **双模式** - API 模式用于服务器，MCP 模式集成 Claude Code
+
+### 🎯 GitHub vs GitLab：不同的工作流
+
+本 agent 支持两个平台，针对不同场景优化了工作流：
+
+| 平台 | 监听范围 | 最适合 | 配置方式 |
+|------|---------|--------|---------|
+| **GitHub** 🐙 | **仓库维度** | 个人项目、开源项目 | 环境变量 |
+| **GitLab** 🦊 | **用户维度** | 企业/团队项目 | 配置文件 |
+
+**GitHub（以仓库为中心）**
+- ✅ 监听你拥有或贡献的特定仓库
+- ✅ 适合个人项目和开源项目
+- ✅ 简单：只需指定 `owner/repo`
+- ✅ 可监听多个仓库：`user1/repo1,user2/repo2`
+
+**GitLab（以用户为中心）**
+- ✅ 监听所有分配给你的 issues（跨项目）
+- ✅ 适合公司/团队环境
+- ✅ 自动：无论在哪个项目被分配，都会追踪
+- ✅ 无需逐个配置每个项目
+
+**示例：**
+```bash
+# GitHub: "监听我关心的这 3 个仓库"
+GITHUB_REPOS="myuser/project1,myuser/project2,team/shared-repo"
+
+# GitLab: "监听所有分配给我的 issues（所有项目）"
+assignee_username: "myusername"
+```
 
 ### 🚀 快速开始
 
@@ -570,19 +658,47 @@ python main.py --stats
 
 **超级简单设置（无需 Flask，无需 Webhook）：**
 
+**方式 1：单个 GitHub 仓库**
 ```bash
 # 1. 安装
 git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. 运行一次测试
+# 2. 运行一次测试（默认监听当前仓库）
 ./run_auto_process.sh
 
 # 3. 添加到 crontab 实现自动处理（每 3 分钟）
 crontab -e
-# 添加这一行：
-*/3 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+# 添加：
+*/3 * * * * export GITHUB_TOKEN='your_token' && /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+```
+
+**方式 2：多个 GitHub 仓库（推荐）**
+```bash
+# 一条命令监听多个仓库
+export GITHUB_REPOS="user1/repo1,user2/repo2,org/repo3"
+./run_github_multi_repos.sh
+
+# 添加到 crontab
+crontab -e
+# 添加：
+*/3 * * * * export GITHUB_TOKEN='your_token' GITHUB_REPOS='user1/repo1,user2/repo2' && /home/mhyuser/gitissue-ai-agent/run_github_multi_repos.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+```
+
+**方式 3：GitLab（所有分配给你的 Issues）**
+```bash
+# 1. 创建配置文件
+cp config/config.example.yaml config/config.yaml
+nano config/config.yaml  # 填写你的 GitLab token 和用户名
+
+# 2. 测试
+./run_gitlab_auto_process.sh
+
+# 3. 添加到 crontab
+crontab -e
+# 添加：
+*/5 * * * * export USE_LOCAL_PROXY=1 && /home/mhyuser/gitissue-ai-agent/run_gitlab_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/gitlab_cron.log 2>&1
 ```
 
 **就这么简单！** 脚本会每 3 分钟自动检查并处理新 issues。
