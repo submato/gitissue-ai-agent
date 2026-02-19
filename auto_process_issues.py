@@ -97,12 +97,22 @@ def process_issues():
             issue_number = issue['number']
             issue_key = f"{repo_owner}/{repo_name}#{issue_number}"
 
+            # 获取当前标签
+            current_labels = [label['name'] for label in issue.get('labels', [])]
+
+            # 🔍 关键：如果有 needs-info 或 in-progress 或 cannot-fix 标签，跳过
+            # 用户需要手动移除这些标签才会重新处理
+            skip_labels = ['needs-info', 'in-progress', 'cannot-fix', 'analyzing']
+            if any(label in current_labels for label in skip_labels):
+                logger.debug(f"Issue #{issue_number} has status label {current_labels}, skipping")
+                continue
+
             # 获取评论历史
             comments = github_client.get_comments(issue_number)
 
             # 生成此 issue 的"状态指纹"（用于判断是否有新变化）
-            # 包含：issue 标题、描述、评论数
-            fingerprint = f"{issue['title']}_{issue['body']}_{len(comments)}"
+            # 包含：issue 标题、描述、评论数、标签
+            fingerprint = f"{issue['title']}_{issue['body']}_{len(comments)}_{','.join(sorted(current_labels))}"
 
             # 检查是否已处理过且没有新变化
             if issue_key in processed and processed[issue_key] == fingerprint:
@@ -184,7 +194,7 @@ I've analyzed your issue and need some more information to proceed:
 
 **Reason:** {analysis_result.get('reason', 'Need clarification')}
 
-Once you provide these details, I'll be able to help with this issue automatically.
+**📌 After you reply:** Please remove the `needs-info` label so I can process your response. The agent will only re-analyze when you remove this label.
 
 🤖 *Powered by [GitIssue AI Agent](https://github.com/{repo_owner}/{repo_name})*
 """
@@ -194,6 +204,8 @@ Once you provide these details, I'll be able to help with this issue automatical
                     new_labels = [l for l in current_labels if l != 'analyzing']
                     new_labels.append('needs-info')
                     github_client.update_issue_labels(issue_number, new_labels)
+
+                    logger.info(f"Posted comment asking for more info on issue #{issue_number}")
 
                 elif action == "can_handle":
                     plan = analysis_result.get('plan', 'Will work on this issue')

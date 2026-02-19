@@ -72,11 +72,20 @@ def process_repository(github_client, ai_provider, repo_owner, repo_name, proces
             issue_number = issue['number']
             issue_key = f"{repo_owner}/{repo_name}#{issue_number}"
 
+            # 获取当前标签
+            current_labels = [label['name'] for label in issue.get('labels', [])]
+
+            # 🔍 关键：如果有状态标签，跳过（用户需手动移除才会重新处理）
+            skip_labels = ['needs-info', 'in-progress', 'cannot-fix', 'analyzing']
+            if any(label in current_labels for label in skip_labels):
+                logger.debug(f"Issue #{issue_number} has status label, skipping")
+                continue
+
             # 获取评论
             comments = github_client.get_comments(issue_number, repo_owner, repo_name)
 
-            # 生成指纹
-            fingerprint = f"{issue['title']}_{issue['body']}_{len(comments)}"
+            # 生成指纹（包含标签状态）
+            fingerprint = f"{issue['title']}_{issue['body']}_{len(comments)}_{','.join(sorted(current_labels))}"
 
             # 检查是否已处理
             if issue_key in processed and processed[issue_key] == fingerprint:
@@ -149,6 +158,8 @@ I've analyzed your issue and need some more information:
 {questions_text}
 
 **Reason:** {analysis_result.get('reason', 'Need clarification')}
+
+**📌 After you reply:** Please remove the `needs-info` label so I can process your response.
 
 🤖 *Powered by [GitIssue AI Agent](https://github.com/{repo_owner}/{repo_name})*
 """

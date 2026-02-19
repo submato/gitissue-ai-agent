@@ -89,6 +89,16 @@ def main():
         logger.info(f"Issue title: {issue['title']}")
         logger.info(f"Issue body: {issue['body'][:200]}...")  # 打印前200字符
 
+        # 检查标签状态
+        current_labels = [label['name'] for label in issue.get('labels', [])]
+        skip_labels = ['needs-info', 'in-progress', 'cannot-fix', 'analyzing']
+
+        # 如果有状态标签，不处理（用户需手动移除）
+        if any(label in current_labels for label in skip_labels):
+            logger.info(f"Issue #{issue_number} has status label {current_labels}, skipping processing")
+            logger.info("User needs to remove the status label to re-trigger processing")
+            return
+
         # 获取所有评论（包括用户的回复）
         comments = github_client.get_comments(issue_number)
         logger.info(f"Found {len(comments)} comments on this issue")
@@ -162,7 +172,7 @@ I've analyzed your issue and need some more information to proceed:
 
 **Reason:** {analysis_result.get('reason', 'Need clarification')}
 
-Once you provide these details, I'll be able to help with this issue automatically.
+**📌 After you reply:** Please remove the `needs-info` label so I can process your response. The agent will only re-analyze when you remove this label.
 
 🤖 *Powered by [GitIssue AI Agent](https://github.com/{repo_owner}/{repo_name})*
 """
