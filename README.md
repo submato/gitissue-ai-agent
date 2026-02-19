@@ -1,5 +1,7 @@
 # GitIssue AI Agent 🤖
 
+> 🎯 **This Repository is Agent-Enabled!** Want to see it in action? [Create an issue with `bot` label](#try-it-on-this-repo) and watch the AI agent automatically process it!
+
 [English](#english) | [中文](#chinese)
 
 <a name="english"></a>
@@ -10,6 +12,16 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+
+---
+
+## 🚀 Try It Now!
+
+**This repository has the agent enabled!** Experience the power of AI-driven issue resolution firsthand:
+
+👉 **[Quick Test: Create an Issue](#try-it-on-this-repo)** - See the agent analyze, comment, and create PRs automatically!
+
+---
 
 ### 🌟 Features
 
@@ -120,7 +132,9 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
-### 🐙 Using for GitHub Issues (This Repository)
+<a name="try-it-on-this-repo"></a>
+
+### 🐙 Try It on This Repository!
 
 Want to see the agent in action? Try it on this repository!
 
@@ -415,7 +429,19 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 中文
 
+> 🎯 **本仓库已接入 Agent！** 想体验效果？[创建一个带 `bot` 标签的 issue](#try-it-on-this-repo-zh) 看 AI agent 自动处理！
+
 > 使用 AI 自动解决 GitLab issues - 首个智能 GitLab issue 自动化框架
+
+---
+
+## 🚀 立即体验！
+
+**本仓库已启用 agent！** 亲身体验 AI 驱动的 issue 自动化处理：
+
+👉 **[快速测试：创建 Issue](#try-it-on-this-repo-zh)** - 观看 agent 自动分析、评论并创建 PR！
+
+---
 
 ### 🌟 特性
 
@@ -501,7 +527,9 @@ python main.py --stats
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
 
-### 🐙 在 GitHub Issues 上使用（本仓库）
+<a name="try-it-on-this-repo-zh"></a>
+
+### 🐙 在本仓库体验！
 
 想看看 agent 的实际效果？在本仓库上试试吧！
 
