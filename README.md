@@ -132,7 +132,20 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
-**For GitHub Actions automation**, see [GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_SETUP.md).
+**GitHub Actions (Automatic on GitHub)**
+
+✅ **This repository has GitHub Actions enabled!** Issues with `bot` label are automatically processed.
+
+To enable GitHub Actions in your own repository:
+1. Fork or clone this repository
+2. Add `ANTHROPIC_API_KEY` secret in repository settings:
+   - Go to: `Settings` > `Secrets and variables` > `Actions`
+   - Click `New repository secret`
+   - Name: `ANTHROPIC_API_KEY`
+   - Value: Your Claude API key from https://console.anthropic.com/settings/keys
+3. The workflow is already configured in `.github/workflows/issue-agent.yml`
+
+See [GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_SETUP.md) for detailed instructions.
 
 <a name="try-it-on-this-repo"></a>
 
@@ -529,7 +542,20 @@ python main.py --stats
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
 
-**GitHub Actions 自动化配置**，详见 [GitHub Actions 设置指南](docs/GITHUB_ACTIONS_SETUP.md)。
+**GitHub Actions（GitHub 上自动运行）**
+
+✅ **本仓库已启用 GitHub Actions！** 带 `bot` 标签的 issue 会自动处理。
+
+要在你自己的仓库启用 GitHub Actions：
+1. Fork 或克隆本仓库
+2. 在仓库设置中添加 `ANTHROPIC_API_KEY` 密钥：
+   - 进入：`Settings` > `Secrets and variables` > `Actions`
+   - 点击 `New repository secret`
+   - 名称：`ANTHROPIC_API_KEY`
+   - 值：从 https://console.anthropic.com/settings/keys 获取的 Claude API key
+3. 工作流配置文件已在 `.github/workflows/issue-agent.yml`
+
+详见 [GitHub Actions 设置指南](docs/GITHUB_ACTIONS_SETUP.md)。
 
 <a name="try-it-on-this-repo-zh"></a>
 
