@@ -132,44 +132,50 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
-**Server Mode (24/7 Automatic Processing)**
+**Server Mode (24/7 Automatic Processing)** ⚡
 
-This project is designed to run on your own server with local AI proxy support.
+This project runs on your own server with local AI proxy support for real-time issue processing.
 
-To set up automatic issue processing on your server:
+**Quick Start:**
 
-1. **Install and configure** on your server:
-   ```bash
-   git clone https://github.com/submato/gitissue-ai-agent.git
-   cd gitissue-ai-agent
-   pip install -r requirements.txt
-   ```
+```bash
+# 1. Install
+git clone https://github.com/submato/gitissue-ai-agent.git
+cd gitissue-ai-agent
+pip install -r requirements.txt
 
-2. **Set up environment variables**:
-   ```bash
-   export USE_LOCAL_PROXY=1  # Use local AI proxy
-   export GITHUB_TOKEN="your_github_token"
-   export ANTHROPIC_API_KEY="any_value"  # Not used when using local proxy
-   ```
+# 2. Start Webhook Server (Recommended)
+./start_webhook.sh
 
-3. **Run with systemd or cron** for 24/7 operation:
-   ```bash
-   # Option 1: Cron job (every 5 minutes)
-   */5 * * * * cd /path/to/gitissue-ai-agent && USE_LOCAL_PROXY=1 python process_github_issue.py
+# 3. Configure GitHub Webhook
+# Go to: Repository → Settings → Webhooks → Add webhook
+# Payload URL: http://your-server-ip:8080/webhook
+# Content type: application/json
+# Events: Issues, Issue comments
+```
 
-   # Option 2: Systemd service (see docs/SERVER_SETUP.md)
-   ```
+**Two deployment options:**
 
-See [Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
+- **🚀 Webhook Server (Recommended)** - Real-time response (seconds)
+  - Instant processing when issues are created
+  - Resource efficient, only runs when needed
+  - See [Server Setup Guide](docs/SERVER_SETUP.md)
+
+- **📅 Cron Job** - Scheduled checks (minutes)
+  - Simple setup, no webhook configuration
+  - Periodic scanning every N minutes
+  - See [Server Setup Guide](docs/SERVER_SETUP.md)
+
+See [📖 Complete Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
 
 <a name="try-it-on-this-repo"></a>
 
 ### 🐙 Try It on This Repository!
 
-Want to see the agent in action? Try it on this repository!
+**✨ This repository has the agent running!** Experience real-time AI issue processing:
 
-1. **Create an issue** in this repository: https://github.com/submato/gitissue-ai-agent/issues/new
-2. **Add labels**: Add `bot` label to trigger automation
+1. **Create an issue**: https://github.com/submato/gitissue-ai-agent/issues/new
+2. **Add `bot` label** to trigger automation
 3. **Describe your request**:
    - Bug fixes: "Fix typo in README"
    - Features: "Add Docker support"
@@ -557,37 +563,50 @@ python main.py --stats
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
 
-**服务器模式（24/7 自动处理）**
+**服务器模式（24/7 自动处理）** ⚡
 
-本项目设计为在你自己的服务器上运行，支持本地 AI 代理。
+本项目运行在你自己的服务器上，支持本地 AI 代理，实现实时 issue 处理。
 
-在服务器上设置自动 issue 处理：
+**快速开始：**
 
-1. **安装和配置**：
-   ```bash
-   git clone https://github.com/submato/gitissue-ai-agent.git
-   cd gitissue-ai-agent
-   pip install -r requirements.txt
-   ```
+```bash
+# 1. 安装
+git clone https://github.com/submato/gitissue-ai-agent.git
+cd gitissue-ai-agent
+pip install -r requirements.txt
 
-2. **设置环境变量**：
-   ```bash
-   export USE_LOCAL_PROXY=1  # 使用本地 AI 代理
-   export GITHUB_TOKEN="你的github_token"
-   export ANTHROPIC_API_KEY="任意值"  # 使用本地代理时不需要真实值
-   ```
+# 2. 启动 Webhook 服务器（推荐）
+./start_webhook.sh
 
-3. **使用 systemd 或 cron 实现 24/7 运行**：
-   ```bash
-   # 方式 1：Cron 定时任务（每 5 分钟）
-   */5 * * * * cd /path/to/gitissue-ai-agent && USE_LOCAL_PROXY=1 python process_github_issue.py
+# 3. 配置 GitHub Webhook
+# 访问：仓库 → Settings → Webhooks → Add webhook
+# Payload URL: http://你的服务器IP:8080/webhook
+# Content type: application/json
+# 事件: Issues, Issue comments
+```
 
-   # 方式 2：Systemd 服务（详见 docs/SERVER_SETUP.md）
-   ```
+**两种部署方式：**
 
-详见[服务器设置指南](docs/SERVER_SETUP.md)。
+- **🚀 Webhook 服务器（推荐）** - 实时响应（秒级）
+  - Issue 创建后立即处理
+  - 资源高效，按需运行
+  - 详见[服务器设置指南](docs/SERVER_SETUP.md)
+
+- **📅 定时任务（Cron）** - 定时检查（分钟级）
+  - 配置简单，无需 webhook
+  - 每 N 分钟定期扫描
+  - 详见[服务器设置指南](docs/SERVER_SETUP.md)
+
+详见 [📖 完整服务器设置指南](docs/SERVER_SETUP.md)。
 
 <a name="try-it-on-this-repo-zh"></a>
+
+### 🐙 在本仓库体验！
+
+**✨ 本仓库已启用 AI Agent！** 体验实时 AI issue 处理：
+
+1. **创建 issue**：https://github.com/submato/gitissue-ai-agent/issues/new
+2. **添加 `bot` 标签** 触发自动化
 
 ### 🐙 在本仓库体验！
 

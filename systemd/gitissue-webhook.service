@@ -1,0 +1,25 @@
+[Unit]
+Description=GitIssue AI Agent - GitHub Webhook Server
+After=network.target
+
+[Service]
+Type=simple
+User=mhyuser
+WorkingDirectory=/home/mhyuser/gitissue-ai-agent
+Environment="USE_LOCAL_PROXY=1"
+Environment="WEBHOOK_PORT=8080"
+Environment="REPO_OWNER=submato"
+Environment="REPO_NAME=gitissue-ai-agent"
+Environment="GITHUB_TOKEN=YOUR_GITHUB_TOKEN"
+Environment="ANTHROPIC_API_KEY=any_value"
+
+ExecStart=/usr/bin/python3 /home/mhyuser/gitissue-ai-agent/webhook_server.py
+
+Restart=always
+RestartSec=10
+
+StandardOutput=append:/home/mhyuser/gitissue-ai-agent/logs/webhook.log
+StandardError=append:/home/mhyuser/gitissue-ai-agent/logs/webhook.error.log
+
+[Install]
+WantedBy=multi-user.target
