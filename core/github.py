@@ -135,6 +135,35 @@ class GitHubClient:
         response.raise_for_status()
         return response.json()
 
+    def get_comments(
+        self,
+        issue_number: int,
+        owner: str = None,
+        repo: str = None
+    ) -> List[Dict]:
+        """
+        获取 issue 的所有评论
+
+        Args:
+            issue_number: Issue 编号
+            owner: 仓库所有者
+            repo: 仓库名称
+
+        Returns:
+            评论列表
+        """
+        owner = owner or self.repo_owner
+        repo = repo or self.repo_name
+
+        if not owner or not repo:
+            raise ValueError("Must provide owner and repo")
+
+        url = f"{self.base_url}/repos/{owner}/{repo}/issues/{issue_number}/comments"
+
+        response = self.session.get(url)
+        response.raise_for_status()
+        return response.json()
+
     def add_labels(
         self,
         issue_number: int,

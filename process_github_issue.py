@@ -86,6 +86,24 @@ def main():
         logger.info(f"Issue title: {issue['title']}")
         logger.info(f"Issue body: {issue['body'][:200]}...")  # 打印前200字符
 
+        # 获取所有评论（包括用户的回复）
+        comments = github_client.get_comments(issue_number)
+        logger.info(f"Found {len(comments)} comments on this issue")
+
+        # 过滤掉机器人自己的评论，只保留用户评论
+        user_comments = []
+        for comment in comments:
+            author = comment['user']['login']
+            body = comment['body']
+            # 跳过 bot 自己的评论
+            if '🤖' not in body and 'AI Agent' not in body and 'Powered by' not in body:
+                user_comments.append({
+                    'author': author,
+                    'body': body,
+                    'created_at': comment['created_at']
+                })
+                logger.info(f"User comment from @{author}: {body[:100]}...")
+
         # 立即发布开始处理的评论
         start_comment = f"""🤖 **AI Agent 已开始处理此 issue，请稍等...**
 
@@ -122,7 +140,7 @@ def main():
         }
 
         logger.info("\nAnalyzing issue with AI...")
-        analysis_result = ai_provider.analyze_issue(unified_issue, repo_info)
+        analysis_result = ai_provider.analyze_issue(unified_issue, repo_info, user_comments)
         logger.info(f"AI Analysis: {analysis_result}")
 
         # 根据分析结果采取行动

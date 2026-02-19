@@ -31,10 +31,10 @@ class ClaudeProvider(AIProvider):
 
         self.client = Anthropic(**client_kwargs)
 
-    def analyze_issue(self, issue: Dict, project_info: Dict) -> Dict:
+    def analyze_issue(self, issue: Dict, project_info: Dict, comments: list = None) -> Dict:
         """分析 issue"""
 
-        prompt = self._build_analysis_prompt(issue, project_info)
+        prompt = self._build_analysis_prompt(issue, project_info, comments)
 
         try:
             response = self.client.messages.create(
@@ -53,10 +53,18 @@ class ClaudeProvider(AIProvider):
                 "comment": None
             }
 
-    def _build_analysis_prompt(self, issue: Dict, project_info: Dict) -> str:
+    def _build_analysis_prompt(self, issue: Dict, project_info: Dict, comments: list = None) -> str:
         """构建分析提示词"""
 
-        return f"""你是一个 GitLab issue 处理机器人。请分析以下 issue 并决定如何处理。
+        # 构建评论历史部分
+        comments_section = ""
+        if comments and len(comments) > 0:
+            comments_section = "\n**用户评论历史**：\n"
+            for i, comment in enumerate(comments, 1):
+                comments_section += f"{i}. @{comment['author']} 说: {comment['body']}\n"
+            comments_section += "\n⚠️ **重要**: 请考虑以上用户评论中提供的额外信息，重新评估 issue。\n"
+
+        return f"""你是一个 GitLab/GitHub issue 处理机器人。请分析以下 issue 并决定如何处理。
 
 **项目信息**：
 - 项目名称：{project_info.get('name', 'N/A')}
@@ -71,12 +79,13 @@ class ClaudeProvider(AIProvider):
 - 标签：{', '.join(issue.get('labels', []))}
 - 描述：
 {issue.get('description') or '(无描述)'}
-
+{comments_section}
 **你的任务**：
 1. 分析这个 issue 是否可以自动处理
-2. 如果可以处理，制定详细的处理计划
-3. 如果需要更多信息，列出需要询问的具体问题
-4. 如果无法处理或不适合自动化，说明原因
+2. **如果有用户评论，优先考虑评论中提供的新信息**
+3. 如果可以处理，制定详细的处理计划
+4. 如果需要更多信息，列出需要询问的具体问题
+5. 如果无法处理或不适合自动化，说明原因
 
 **返回 JSON 格式**（只返回 JSON，不要其他内容）：
 {{
