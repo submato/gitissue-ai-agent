@@ -34,7 +34,8 @@ def main():
     # 初始化 AI Provider
     ai_provider = ClaudeProvider(
         api_key=anthropic_api_key,
-        model="claude-sonnet-4-5-20250929"
+        model="claude-sonnet-4-5-20250929",
+        api_base="http://localhost:8082"  # 使用本地代理
     )
 
     try:
@@ -50,44 +51,44 @@ def main():
             github_client.add_labels(issue_number, ['analyzing'])
             print("Added 'analyzing' label")
 
-        # 构建分析提示
-        analysis_prompt = f"""
-Analyze this GitHub issue and determine if it can be handled automatically:
+        # 构建仓库信息（用于 AI 分析）
+        repo_info = {
+            'name': repo_name,
+            'path_with_namespace': f"{repo_owner}/{repo_name}",
+            'default_branch': 'main',
+            'description': f"GitHub repository: {repo_owner}/{repo_name}"
+        }
 
-**Issue Title:** {issue['title']}
-
-**Issue Description:**
-{issue['body']}
-
-**Repository:** {repo_owner}/{repo_name}
-
-Determine:
-1. Can this issue be handled automatically? (yes/no)
-2. What needs to be done?
-3. If you need more information, what questions should be asked?
-
-Respond in JSON format:
-{{
-  "can_handle": true/false,
-  "decision": "can_handle" or "need_info" or "cannot_fix",
-  "reason": "explanation",
-  "questions": ["question1", "question2"] (if need_info),
-  "plan": ["step1", "step2"] (if can_handle)
-}}
-"""
+        # 转换 GitHub issue 格式为统一格式
+        unified_issue = {
+            'iid': issue['number'],
+            'title': issue['title'],
+            'description': issue['body'] or '',
+            'author': {
+                'username': issue['user']['login']
+            },
+            'labels': [label['name'] for label in issue.get('labels', [])]
+        }
 
         print("\nAnalyzing issue with AI...")
-        analysis_result = ai_provider.analyze(analysis_prompt)
+        analysis_result = ai_provider.analyze_issue(unified_issue, repo_info)
         print(f"AI Analysis: {analysis_result}")
 
         # 根据分析结果采取行动
-        if "need_info" in analysis_result.lower() or "need more" in analysis_result.lower():
+        action = analysis_result.get('action', 'skip')
+
+        if action == "need_info":
             # 需要更多信息
+            questions = analysis_result.get('questions', [])
+            questions_text = "\n".join(f"{i+1}. {q}" for i, q in enumerate(questions))
+
             comment_body = f"""👋 Hi @{issue['user']['login']}!
 
 I've analyzed your issue and need some more information to proceed:
 
-{analysis_result}
+{questions_text}
+
+**Reason:** {analysis_result.get('reason', 'Need clarification')}
 
 Once you provide these details, I'll be able to help with this issue automatically.
 
@@ -102,12 +103,17 @@ Once you provide these details, I'll be able to help with this issue automatical
 
             print("Posted comment asking for more info")
 
-        elif "can_handle" in analysis_result.lower() or "can handle" in analysis_result.lower():
+        elif action == "can_handle":
             # 可以处理
+            plan = analysis_result.get('plan', 'Will work on this issue')
+
             comment_body = f"""✅ Great! I can help with this issue.
 
 **Analysis:**
-{analysis_result}
+{analysis_result.get('reason', 'This issue can be automated')}
+
+**Plan:**
+{plan}
 
 I'll start working on this shortly. Stay tuned for updates!
 
@@ -123,12 +129,12 @@ I'll start working on this shortly. Stay tuned for updates!
             print("Posted comment confirming can handle")
             print("Note: Actual implementation would be done here")
 
-        else:
+        else:  # skip or other
             # 无法自动处理
             comment_body = f"""ℹ️ I've analyzed this issue, but it appears to be too complex for automatic handling.
 
 **Reason:**
-{analysis_result}
+{analysis_result.get('reason', 'This task requires human expertise')}
 
 This issue would benefit from human review and implementation. I'll label it appropriately for the team to review.
 
