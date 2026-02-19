@@ -79,7 +79,7 @@ class MCPExecutor:
     在 Claude Code 环境中直接执行 issue 修复
     """
 
-    def __init__(self, gitlab_client, workspace_path: str = "/tmp/gitlab-ai-agent-workspace"):
+    def __init__(self, gitlab_client, workspace_path: str = "/tmp/gitissue-ai-agent-workspace"):
         """
         初始化执行器
 

@@ -6,7 +6,7 @@
 
 ### 报告 Bug
 
-在 [GitHub Issues](https://github.com/YOUR_USERNAME/gitlab-ai-agent/issues) 中创建 issue，包括：
+在 [GitHub Issues](https://github.com/YOUR_USERNAME/gitissue-ai-agent/issues) 中创建 issue，包括：
 
 - 问题描述
 - 复现步骤
@@ -113,8 +113,8 @@ class MyProvider(AIProvider):
 
 ```bash
 # 克隆
-git clone https://github.com/YOUR_USERNAME/gitlab-ai-agent.git
-cd gitlab-ai-agent
+git clone https://github.com/YOUR_USERNAME/gitissue-ai-agent.git
+cd gitissue-ai-agent
 
 # 创建虚拟环境
 python3 -m venv venv

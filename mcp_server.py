@@ -19,7 +19,7 @@ from core.state import StateManager
 
 
 # MCP Server 配置
-MCP_SERVER_NAME = "gitlab-ai-agent"
+MCP_SERVER_NAME = "gitissue-ai-agent"
 MCP_SERVER_VERSION = "0.1.0"
 
 

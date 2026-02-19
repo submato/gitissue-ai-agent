@@ -26,7 +26,7 @@ echo "✅ 找到 Claude Code 配置目录: $CLAUDE_CONFIG_DIR"
 
 # 创建或更新 MCP 配置
 if [ -f "$CLAUDE_MCP_FILE" ]; then
-    echo "📝 已存在 MCP 配置文件，将添加 gitlab-ai-agent"
+    echo "📝 已存在 MCP 配置文件，将添加 gitissue-ai-agent"
     # 备份现有配置
     cp "$CLAUDE_MCP_FILE" "$CLAUDE_MCP_FILE.backup.$(date +%s)"
     echo "💾 已备份到: $CLAUDE_MCP_FILE.backup.*"
@@ -41,7 +41,7 @@ with open('$CLAUDE_MCP_FILE', 'r') as f:
 if 'mcpServers' not in config:
     config['mcpServers'] = {}
 
-config['mcpServers']['gitlab-ai-agent'] = {
+config['mcpServers']['gitissue-ai-agent'] = {
     'command': 'python3',
     'args': ['$MCP_SERVER_PATH']
 }
@@ -57,7 +57,7 @@ else
     cat > "$CLAUDE_MCP_FILE" << EOF
 {
   "mcpServers": {
-    "gitlab-ai-agent": {
+    "gitissue-ai-agent": {
       "command": "python3",
       "args": ["$MCP_SERVER_PATH"]
     }

@@ -42,7 +42,7 @@ ai_provider:
 # 工作空间配置
 workspace:
   # 克隆代码的本地路径
-  clone_path: "/tmp/gitlab-ai-agent-workspace"
+  clone_path: "/tmp/gitissue-ai-agent-workspace"
 
 # 状态文件路径
 state_file: "state.json"

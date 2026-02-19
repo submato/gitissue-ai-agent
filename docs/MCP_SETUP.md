@@ -21,10 +21,10 @@ MCP (Model Context Protocol) 模式允许 Claude Code 直接调用 GitLab AI Age
 ```json
 {
   "mcpServers": {
-    "gitlab-ai-agent": {
+    "gitissue-ai-agent": {
       "command": "python3",
       "args": [
-        "/home/mhyuser/gitlab-ai-agent/mcp_server.py"
+        "/home/mhyuser/gitissue-ai-agent/mcp_server.py"
       ]
     }
   }
@@ -217,7 +217,7 @@ GitLab AI Agent 可以与其他 MCP servers 配合：
 ```json
 {
   "mcpServers": {
-    "gitlab-ai-agent": {...},
+    "gitissue-ai-agent": {...},
     "github-copilot": {...},
     "slack-notifier": {...}
   }
