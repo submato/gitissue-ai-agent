@@ -1,6 +1,10 @@
+# Platform 配置 - 选择 GitLab 或 GitHub
+platform: "gitlab"  # 或 "github"
+
+# GitLab 配置
 gitlab:
   # GitLab 实例 URL
-  url: "https://platgit.mihoyo.com"
+  url: "https://gitlab.com"
 
   # Personal Access Token
   # 获取：GitLab > Preferences > Access Tokens
@@ -8,7 +12,7 @@ gitlab:
   access_token: "YOUR_GITLAB_TOKEN"
 
   # 要处理的用户（你的用户名）
-  assignee_username: "zhiyang.wang"
+  assignee_username: "your-username"
 
   # 自动处理的标签
   # 只有带这些标签的 issues 才会被处理
@@ -16,6 +20,29 @@ gitlab:
     - "bot"
     - "auto-fix"
     - "ai"
+
+# GitHub 配置
+github:
+  # Personal Access Token
+  # 获取：GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic)
+  # 权限：repo, workflow
+  access_token: "YOUR_GITHUB_TOKEN"
+
+  # 仓库所有者（用户名或组织名）
+  repo_owner: "your-username"
+
+  # 仓库名称
+  repo_name: "your-repo"
+
+  # 自动处理的标签
+  # 只有带这些标签的 issues 才会被处理
+  auto_process_labels:
+    - "bot"
+    - "auto-fix"
+    - "ai"
+
+  # 可选：只处理分配给特定用户的 issues
+  assignee: ""  # 留空表示处理所有带标签的 issues
 
 # AI Provider 配置
 ai_provider:
