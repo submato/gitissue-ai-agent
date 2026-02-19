@@ -132,6 +132,8 @@ python main.py --stats
 
 See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
+**For GitHub Actions automation**, see [GitHub Actions Setup Guide](docs/GITHUB_ACTIONS_SETUP.md).
+
 <a name="try-it-on-this-repo"></a>
 
 ### 🐙 Try It on This Repository!
@@ -526,6 +528,8 @@ python main.py --stats
 ```
 
 详见 [MCP 设置指南](docs/MCP_SETUP.md)。
+
+**GitHub Actions 自动化配置**，详见 [GitHub Actions 设置指南](docs/GITHUB_ACTIONS_SETUP.md)。
 
 <a name="try-it-on-this-repo-zh"></a>
 
