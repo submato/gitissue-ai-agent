@@ -134,9 +134,9 @@ See [MCP Setup Guide](docs/MCP_SETUP.md) for details.
 
 **Server Mode (24/7 Automatic Processing)** ⚡
 
-This project runs on your own server with local AI proxy support for real-time issue processing.
+This project runs on your own server with local AI proxy support for automatic issue processing.
 
-**Quick Start:**
+**Super Simple Setup (No Flask, No Webhook Needed):**
 
 ```bash
 # 1. Install
@@ -144,26 +144,27 @@ git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. Start Webhook Server (Recommended)
-./start_webhook.sh
+# 2. Run once to test
+./run_auto_process.sh
 
-# 3. Configure GitHub Webhook
-# Go to: Repository → Settings → Webhooks → Add webhook
-# Payload URL: http://your-server-ip:8080/webhook
-# Content type: application/json
-# Events: Issues, Issue comments
+# 3. Add to crontab for automatic processing (every 3 minutes)
+crontab -e
+# Add this line:
+*/3 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
 ```
+
+**That's it!** The script will automatically check for new issues every 3 minutes and process them.
 
 **Two deployment options:**
 
-- **🚀 Webhook Server (Recommended)** - Real-time response (seconds)
-  - Instant processing when issues are created
-  - Resource efficient, only runs when needed
+- **📅 Cron Job (Recommended)** - Simple and reliable
+  - No dependencies (no Flask, no web server)
+  - Automatic periodic checks every N minutes
   - See [Server Setup Guide](docs/SERVER_SETUP.md)
 
-- **📅 Cron Job** - Scheduled checks (minutes)
-  - Simple setup, no webhook configuration
-  - Periodic scanning every N minutes
+- **🚀 Webhook Server** - Real-time response
+  - Requires Flask and webhook configuration
+  - Instant processing when issues are created
   - See [Server Setup Guide](docs/SERVER_SETUP.md)
 
 See [📖 Complete Server Setup Guide](docs/SERVER_SETUP.md) for detailed instructions.
@@ -172,7 +173,7 @@ See [📖 Complete Server Setup Guide](docs/SERVER_SETUP.md) for detailed instru
 
 ### 🐙 Try It on This Repository!
 
-**✨ This repository has the agent running!** Experience real-time AI issue processing:
+**✨ This repository has the agent running!** Experience AI issue processing:
 
 1. **Create an issue**: https://github.com/submato/gitissue-ai-agent/issues/new
 2. **Add `bot` label** to trigger automation
@@ -565,9 +566,9 @@ python main.py --stats
 
 **服务器模式（24/7 自动处理）** ⚡
 
-本项目运行在你自己的服务器上，支持本地 AI 代理，实现实时 issue 处理。
+本项目运行在你自己的服务器上，支持本地 AI 代理，自动处理 issues。
 
-**快速开始：**
+**超级简单设置（无需 Flask，无需 Webhook）：**
 
 ```bash
 # 1. 安装
@@ -575,26 +576,27 @@ git clone https://github.com/submato/gitissue-ai-agent.git
 cd gitissue-ai-agent
 pip install -r requirements.txt
 
-# 2. 启动 Webhook 服务器（推荐）
-./start_webhook.sh
+# 2. 运行一次测试
+./run_auto_process.sh
 
-# 3. 配置 GitHub Webhook
-# 访问：仓库 → Settings → Webhooks → Add webhook
-# Payload URL: http://你的服务器IP:8080/webhook
-# Content type: application/json
-# 事件: Issues, Issue comments
+# 3. 添加到 crontab 实现自动处理（每 3 分钟）
+crontab -e
+# 添加这一行：
+*/3 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
 ```
+
+**就这么简单！** 脚本会每 3 分钟自动检查并处理新 issues。
 
 **两种部署方式：**
 
-- **🚀 Webhook 服务器（推荐）** - 实时响应（秒级）
-  - Issue 创建后立即处理
-  - 资源高效，按需运行
+- **📅 定时任务（Cron）（推荐）** - 简单可靠
+  - 零依赖（无需 Flask，无需 web 服务器）
+  - 每 N 分钟自动检查
   - 详见[服务器设置指南](docs/SERVER_SETUP.md)
 
-- **📅 定时任务（Cron）** - 定时检查（分钟级）
-  - 配置简单，无需 webhook
-  - 每 N 分钟定期扫描
+- **🚀 Webhook 服务器** - 实时响应
+  - 需要 Flask 和 webhook 配置
+  - Issue 创建后立即处理
   - 详见[服务器设置指南](docs/SERVER_SETUP.md)
 
 详见 [📖 完整服务器设置指南](docs/SERVER_SETUP.md)。
@@ -603,7 +605,7 @@ pip install -r requirements.txt
 
 ### 🐙 在本仓库体验！
 
-**✨ 本仓库已启用 AI Agent！** 体验实时 AI issue 处理：
+**✨ 本仓库已启用 AI Agent！** 体验 AI issue 处理：
 
 1. **创建 issue**：https://github.com/submato/gitissue-ai-agent/issues/new
 2. **添加 `bot` 标签** 触发自动化

@@ -1,0 +1,11 @@
+# 将此内容添加到 crontab 中
+# 编辑命令：crontab -e
+
+# 每 3 分钟检查一次新 issues
+*/3 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+
+# 或者每 5 分钟
+# */5 * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
+
+# 或者每 1 分钟（更实时）
+# * * * * * /home/mhyuser/gitissue-ai-agent/run_auto_process.sh >> /home/mhyuser/gitissue-ai-agent/logs/cron.log 2>&1
