@@ -15,6 +15,7 @@ dist/
 config/config.yaml
 state.json
 *.log
+logs/
 
 # IDE
 .vscode/
